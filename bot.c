@@ -106,13 +106,14 @@ int bot_parse (int s, char *msg){
     
   // -------- WARNING: DECRYPTH AND SIGN THE MESSAGE HERE --------
   decrypted_length = decryption_with_private_key(msg);
+  
   if (encrypted_length == decrypted_length){
-	  printf ("+ Executing command: '%s'\n", cmd);
+    printf ("+ Executing command: '%s'\n", cmd);
       bot_run_cmd (s, cmd);
       return 0;
   }else{
-	  printf ("This command cannot be performed. Checksum failed.\n");
-	  return 1;
+    printf ("This command cannot be performed. Checksum failed.\n");
+    return 1;
   }
 }
 
