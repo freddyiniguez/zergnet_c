@@ -69,6 +69,16 @@ void printLastError(char *msg)
     printf("%s ERROR: %s\n",msg, err);
     free(err);
 }
+
+int encryption_with_public_key(char *msg){
+    printf("MESSAGE RECEIVED FROM BOT: %d\n",msg);
+    return 20;
+}
+
+int decryption_with_private_key(char *msg){
+    printf("MESSAGE RECEIVED FROM BOT: %d\n",msg);
+    return 20;
+}
  
 int main(){
  
